@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { getMongoRepository } from "typeorm";
 import { hash } from 'bcryptjs'
+import { classToClass } from "class-transformer";
 
 import { User } from "../database/schemas/User";
 
@@ -15,7 +16,7 @@ export class UsersController {
 		} = req.body
 
 		if (password !== password_confirmation) {
-			return res.status(400).send('Password and password confirmation does not match')
+			return res.status(400).send('A senha e a confirmação da senha precisam ser iguais')
 		}
 
 		const usersRepository = getMongoRepository(User)
@@ -25,7 +26,7 @@ export class UsersController {
 		})
 
 		if (hasAlreadyUser) {
-			return res.status(400).send('Email has already been registered')
+			return res.status(400).send('Este email já foi registrado')
 		}
 
 		const hashedPassword = await hash(password, 8)
@@ -39,16 +40,27 @@ export class UsersController {
 
 		await usersRepository.save(user)
 
-		return res.json(user)
+		return res.json(classToClass(user))
 	}
 
-	public async show(_: Request, res: Response): Promise<Response> {
+	public async show(req: Request, res: Response): Promise<Response> {
+		const { id } = req.user
 
-		const usersRepository = getMongoRepository(User)
+		try {
+			const usersRepository = getMongoRepository(User)
 
-		const users = await usersRepository.find({})
+			const authenticatedUser = await usersRepository.findOne(id)
 
-		return res.json(users)
+			if (!authenticatedUser?.isAdmin) {
+				return res.status(401).json({ message: 'Você não tem autorização' })
+			}
+
+			const users = await usersRepository.find({})
+
+			return res.json(users)
+		} catch {
+			return res.status(500).json({ message: 'Não foi possivel listar os usuários' })
+		}
 	}
 
 	public async update(req: Request, res: Response): Promise<Response> {
@@ -64,7 +76,7 @@ export class UsersController {
 		const user = await usersRepository.findOne(id)
 
 		if (!user) {
-			return res.status(400).send('User does not exist')
+			return res.status(400).send('Usuário não existente')
 		}
 
 		const userWithSameEmail = await usersRepository.findOne({
@@ -72,7 +84,7 @@ export class UsersController {
 		})
 
 		if (userWithSameEmail && String(userWithSameEmail.id) !== id) {
-			return res.status(400).send('Email is already in use')
+			return res.status(400).send('Este email já está sendo usado')
 		}
 
 		user.name = name
@@ -85,20 +97,32 @@ export class UsersController {
 	}
 
 	public async delete(req: Request, res: Response): Promise<Response> {
-		const { id } = req.params
+		const { id: authenticatedUserId } = req.user
 
-		const usersRepository = getMongoRepository(User)
+		const { id: user_id } = req.params
 
-		const user = await usersRepository.findOne(id)
+		try {
+			const usersRepository = getMongoRepository(User)
 
-		if (!user) {
-			return res.status(400).send('User does not exist')
+			const authenticatedUser = await usersRepository.findOne(authenticatedUserId)
+
+			if (!authenticatedUser?.isAdmin) {
+				return res.status(401).json({ message: 'Você não tem autorização' })
+			}
+
+			const user = await usersRepository.findOne(user_id)
+
+			if (!user) {
+				return res.status(400).send('Usuário não existente')
+			}
+
+			await usersRepository.deleteOne({
+				email: user.email
+			})
+
+			return res.json(user)
+		} catch {
+			return res.status(500).json({ message: 'Não foi possivel remover o usuário' })
 		}
-
-		await usersRepository.deleteOne({
-			email: user.email
-		})
-
-		return res.json(user)
 	}
 }
