@@ -56,8 +56,9 @@ export class UsersController {
 			}
 
 			const users = await usersRepository.find({})
+			const usersWithoutAuthenticatedUser = users.filter(user => String(user.id) !== id)
 
-			return res.json(users)
+			return res.json(usersWithoutAuthenticatedUser)
 		} catch {
 			return res.status(500).json({ message: 'Não foi possivel listar os usuários' })
 		}
