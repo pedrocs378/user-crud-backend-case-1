@@ -21,6 +21,9 @@ export class User {
 	@Column({ nullable: false })
 	password: string
 
+	@Column({ nullable: false })
+	isAdmin: boolean
+
 	@CreateDateColumn()
 	created_at: Date
 

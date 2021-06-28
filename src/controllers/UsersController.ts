@@ -10,8 +10,13 @@ export class UsersController {
 		const {
 			name,
 			email,
-			password
+			password,
+			password_confirmation
 		} = req.body
+
+		if (password !== password_confirmation) {
+			return res.status(400).send('Password and password confirmation does not match')
+		}
 
 		const usersRepository = getMongoRepository(User)
 
@@ -28,7 +33,8 @@ export class UsersController {
 		const user = usersRepository.create({
 			name,
 			email,
-			password: hashedPassword
+			password: hashedPassword,
+			isAdmin: false
 		})
 
 		await usersRepository.save(user)
