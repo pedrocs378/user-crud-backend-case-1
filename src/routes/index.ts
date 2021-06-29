@@ -17,7 +17,7 @@ routes.get('/users', ensureAuthenticated, usersController.show)
 routes.put('/users/:id', ensureAuthenticated, usersController.update)
 routes.delete('/users/:id', ensureAuthenticated, usersController.delete)
 
-routes.put('/profile', profileController.update)
+routes.put('/profile', ensureAuthenticated, profileController.update)
 
 routes.post('/sessions', sessionsController.create)
 
