@@ -32,6 +32,10 @@ export class SearchController {
 				}
 			})
 
+			if (users.length === 0) {
+				return res.status(400).json({ message: 'Nenhum usuário encontrado' })
+			}
+
 			const usersWithoutAuthenticatedUser = users.filter(user => String(user.id) !== String(authenticatedUser.id))
 
 			return res.json(usersWithoutAuthenticatedUser)
