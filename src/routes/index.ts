@@ -5,8 +5,10 @@ import { ensureAuthenticated } from '../middlewares/ensureAuthenticated'
 import { UsersController } from '../controllers/UsersController'
 import { SessionsController } from '../controllers/SessionsControler'
 import { ProfileController } from '../controllers/ProfileController'
+import { SearchController } from '../controllers/SearchController'
 
 const usersController = new UsersController()
+const searchController = new SearchController()
 const profileController = new ProfileController()
 const sessionsController = new SessionsController()
 
@@ -16,6 +18,8 @@ routes.post('/users', usersController.create)
 routes.get('/users', ensureAuthenticated, usersController.show)
 routes.put('/users/:id', ensureAuthenticated, usersController.update)
 routes.delete('/users/:id', ensureAuthenticated, usersController.delete)
+
+routes.get('/users/search', ensureAuthenticated, searchController.show)
 
 routes.put('/profile', ensureAuthenticated, profileController.update)
 
