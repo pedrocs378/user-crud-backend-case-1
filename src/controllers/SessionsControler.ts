@@ -4,8 +4,9 @@ import { sign } from 'jsonwebtoken'
 import { classToClass } from "class-transformer";
 import bcrypt from 'bcryptjs'
 
-import authConfig from "../config/auth";
 import { User } from "../database/schemas/User";
+
+import authConfig from "../config/auth";
 
 export class SessionsController {
 

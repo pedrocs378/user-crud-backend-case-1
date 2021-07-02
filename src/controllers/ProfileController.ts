@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getMongoRepository } from "typeorm";
-import { hash } from "bcryptjs";
+import { hash, compare } from "bcryptjs";
 
 import { User } from "../database/schemas/User";
 
@@ -12,7 +12,7 @@ export class ProfileController {
 			name,
 			email,
 			password,
-			password_confirmation
+			old_password
 		} = req.body
 
 		const usersRepository = getMongoRepository(User)
@@ -34,7 +34,13 @@ export class ProfileController {
 		user.name = name
 		user.email = email
 
-		if (password && password_confirmation) {
+		if (password && old_password) {
+			const checkOldPassword = await compare(old_password, user.password)
+
+			if (!checkOldPassword) {
+				return res.status(400).json({ message: 'Senha antiga incorreta' })
+			}
+
 			user.password = await hash(password, 8)
 		}
 

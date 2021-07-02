@@ -72,7 +72,9 @@ export class UsersController {
 
 		const {
 			name,
+			cpf,
 			email,
+			admin,
 			password,
 			password_confirmation
 		} = req.body
@@ -101,8 +103,14 @@ export class UsersController {
 
 		user.name = name
 		user.email = email
+		user.cpf = cpf
+		user.isAdmin = admin
 
 		if (password && password_confirmation) {
+			if (password !== password_confirmation) {
+				return res.status(400).json({ message: 'As senhas não conferem' })
+			}
+
 			user.password = await hash(password, 8)
 		}
 
