@@ -19,6 +19,9 @@ export class User {
 	@Column({ nullable: false, unique: true })
 	email: string
 
+	@Column({ nullable: false, unique: true })
+	cpf: string
+
 	@Column({ nullable: false })
 	@Exclude()
 	password: string

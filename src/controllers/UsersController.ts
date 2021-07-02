@@ -11,6 +11,7 @@ export class UsersController {
 		const {
 			name,
 			email,
+			cpf,
 			password,
 			password_confirmation
 		} = req.body
@@ -26,7 +27,7 @@ export class UsersController {
 		})
 
 		if (hasAlreadyUser) {
-			return res.status(400).send('Este email já foi registrado')
+			return res.status(400).send('Este usuário já foi registrado')
 		}
 
 		const hashedPassword = await hash(password, 8)
@@ -34,6 +35,7 @@ export class UsersController {
 		const user = usersRepository.create({
 			name,
 			email,
+			cpf,
 			password: hashedPassword,
 			isAdmin: false
 		})
