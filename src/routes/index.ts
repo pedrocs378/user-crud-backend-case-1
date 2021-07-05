@@ -6,11 +6,13 @@ import { UsersController } from '../controllers/UsersController'
 import { SessionsController } from '../controllers/SessionsControler'
 import { ProfileController } from '../controllers/ProfileController'
 import { SearchController } from '../controllers/SearchController'
+import { ForgotPasswordController } from '../controllers/ForgotPasswordController'
 
 const usersController = new UsersController()
 const searchController = new SearchController()
 const profileController = new ProfileController()
 const sessionsController = new SessionsController()
+const forgotPasswordController = new ForgotPasswordController()
 
 const routes = express.Router()
 
@@ -18,6 +20,9 @@ routes.post('/users', usersController.create)
 routes.get('/users', ensureAuthenticated, usersController.show)
 routes.put('/users/:id', ensureAuthenticated, usersController.update)
 routes.delete('/users/:id', ensureAuthenticated, usersController.delete)
+
+routes.post('/password/forgot', forgotPasswordController.create)
+routes.post('/password/reset')
 
 routes.get('/users/search', ensureAuthenticated, searchController.show)
 
