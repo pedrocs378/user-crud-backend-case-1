@@ -3,7 +3,8 @@ import { getMongoRepository } from "typeorm";
 import crypto from 'crypto'
 import path from 'path'
 
-import { MailProvider } from "../providers/mailProvider";
+import { getMailerTransporter } from "../modules/mailer";
+import { MailProvider } from "../providers/MailProvider";
 
 import { User } from "../database/schemas/User";
 import { UserToken } from "../database/schemas/UserToken";
@@ -13,7 +14,6 @@ export class ForgotPasswordController {
 	public async create(req: Request, res: Response): Promise<Response> {
 		const { email } = req.body
 
-		const mailProvider = new MailProvider()
 		const usersRepository = getMongoRepository(User)
 		const userTokensRepository = getMongoRepository(UserToken)
 
@@ -24,12 +24,16 @@ export class ForgotPasswordController {
 		}
 
 		const token = crypto.randomBytes(20).toString('hex')
+
 		const expiresIn = new Date()
 		expiresIn.setHours(expiresIn.getHours() + 1)
 
 		const userToken = userTokensRepository.create({ user_id: user.id, token, expiresIn })
 
 		await userTokensRepository.save(userToken)
+
+		const transporter = await getMailerTransporter()
+		const mailProvider = new MailProvider(transporter)
 
 		const forgotPasswordTemplate = path.resolve(__dirname, '..', 'views', 'forgot_password.html')
 
