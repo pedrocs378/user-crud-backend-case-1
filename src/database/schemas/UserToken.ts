@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, Generated, ObjectIdColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ObjectIdColumn, UpdateDateColumn } from "typeorm";
 import { ObjectId } from "mongodb";
 
 @Entity('user_tokens')

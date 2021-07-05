@@ -13,6 +13,7 @@ export class ForgotPasswordController {
 	public async create(req: Request, res: Response): Promise<Response> {
 		const { email } = req.body
 
+		const mailProvider = new MailProvider()
 		const usersRepository = getMongoRepository(User)
 		const userTokensRepository = getMongoRepository(UserToken)
 
@@ -29,8 +30,6 @@ export class ForgotPasswordController {
 		const userToken = userTokensRepository.create({ user_id: user.id, token, expiresIn })
 
 		await userTokensRepository.save(userToken)
-
-		const mailProvider = new MailProvider()
 
 		const forgotPasswordTemplate = path.resolve(__dirname, '..', 'views', 'forgot_password.html')
 
@@ -53,6 +52,6 @@ export class ForgotPasswordController {
 			}
 		})
 
-		return res.status(200)
+		return res.status(200).send()
 	}
 }
