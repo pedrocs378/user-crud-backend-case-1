@@ -34,6 +34,8 @@ export class ResetPasswordController {
 
 		await usersRepository.save(user)
 
+		await userTokenRepository.deleteOne({ token })
+
 		return res.status(200).send()
 	}
 }
