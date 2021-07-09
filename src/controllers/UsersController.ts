@@ -17,7 +17,7 @@ export class UsersController {
 		} = req.body
 
 		if (password !== password_confirmation) {
-			return res.status(400).send('A senha e a confirmação da senha precisam ser iguais')
+			return res.status(400).json({ message: 'A senha e a confirmação da senha precisam ser iguais' })
 		}
 
 		const usersRepository = getMongoRepository(User)
@@ -27,7 +27,7 @@ export class UsersController {
 		})
 
 		if (hasAlreadyUser) {
-			return res.status(400).send('Este usuário já foi registrado')
+			return res.status(400).json({ message: 'Este usuário já foi registrado' })
 		}
 
 		const hashedPassword = await hash(password, 8)

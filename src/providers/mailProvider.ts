@@ -50,7 +50,6 @@ export class MailProvider {
 			html
 		})
 
-		console.log('Message sent:', message.messageId)
-		console.log('Preview URL:', nodemailer.getTestMessageUrl(message))
+		console.log('URL:', nodemailer.getTestMessageUrl(message))
 	}
 }
